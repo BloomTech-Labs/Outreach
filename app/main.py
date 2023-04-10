@@ -34,11 +34,11 @@ async def version():
 
 
 @API.post("/outreach", tags=["Outreach"])
-async def version(your_name,
-                  company,
-                  job_title,
-                  job_description,
-                  key_points_from_resume):
+async def outreach(your_name,
+                   company,
+                   job_title,
+                   job_description,
+                   key_points_from_resume):
     context = "You are a master at cold outreach for tech jobs."
     prompt = f"Write a cold outreach letter to {company} from {your_name} " \
              f"for the {job_title} role. The job description " \
