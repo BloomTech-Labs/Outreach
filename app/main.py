@@ -29,7 +29,10 @@ openai.api_key = os.getenv("OPENAI_KEY")
 
 @API.get("/version", tags=["General"])
 async def version():
-    """<h3>Returns API Version</h3>"""
+    """<h3>Version</h3>
+    Returns the current version of the API
+    <pre><code>
+    @return: String </code></pre>"""
     return VERSION
 
 
@@ -39,6 +42,15 @@ async def outreach(your_name,
                    job_title,
                    job_description,
                    key_points_from_resume):
+    """<h3>Outreach</h3>
+    Returns an AI Generated Cold Outreach Letter
+    <pre><code>
+    @param your_name: String
+    @param company: String
+    @param job_title: String
+    @param job_description: String
+    @param key_points_from_resume: String
+    @return: String </code></pre>"""
     context = "You are a master at cold outreach for tech jobs."
     prompt = f"Write a cold outreach letter to {company} from {your_name} " \
              f"for the {job_title} role. The job description " \
