@@ -1,6 +1,6 @@
 import os
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Form
 from fastapi.middleware.cors import CORSMiddleware
 import openai
 from dotenv import load_dotenv
@@ -37,11 +37,11 @@ async def version():
 
 
 @API.post("/outreach", tags=["Outreach"])
-async def outreach(your_name,
-                   company,
-                   job_title,
-                   job_description,
-                   key_points_from_resume):
+async def outreach(your_name: str = Form(),
+                   company: str = Form(),
+                   job_title: str = Form(),
+                   job_description: str = Form(),
+                   key_points_from_resume: str = Form()):
     """<h3>Outreach</h3>
     Returns an AI Generated Cold Outreach Letter
     <pre><code>
