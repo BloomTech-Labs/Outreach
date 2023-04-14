@@ -9,7 +9,7 @@ with open("README.md", "r") as file:
     next(file)
     description = file.read()
 
-VERSION = "0.0.4"
+VERSION = "0.0.5"
 API = FastAPI(
     title='Outreach API',
     description=description,
@@ -36,12 +36,12 @@ async def version():
     return VERSION
 
 
-@API.post("/outreach", tags=["Outreach"])
-async def outreach(your_name: str = Form(),
-                   company: str = Form(),
-                   job_title: str = Form(),
-                   job_description: str = Form(),
-                   key_points_from_resume: str = Form()):
+@API.get("/outreach", tags=["Outreach"])
+async def outreach(your_name: str,
+                   company: str,
+                   job_title: str,
+                   job_description: str,
+                   key_points_from_resume: str):
     """<h3>Outreach</h3>
     Returns an AI Generated Cold Outreach Letter
     <pre><code>
