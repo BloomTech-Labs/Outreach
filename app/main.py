@@ -1,15 +1,18 @@
 import os
 
-from fastapi import FastAPI, Form
+import requests
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import openai
 from dotenv import load_dotenv
+
+from app.database import Database
 
 with open("README.md", "r") as file:
     next(file)
     description = file.read()
 
-VERSION = "0.0.5"
+VERSION = "0.0.6"
 API = FastAPI(
     title='Outreach API',
     description=description,
@@ -25,6 +28,8 @@ API.add_middleware(
 )
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_KEY")
+hunter_key = os.getenv("HUNTER_KEY")
+API.db = Database("Outreach")
 
 
 @API.get("/version", tags=["General"])
@@ -38,6 +43,7 @@ async def version():
 
 @API.get("/outreach", tags=["Outreach"])
 async def outreach(your_name: str,
+                   your_email: str,
                    company: str,
                    job_title: str,
                    job_description: str,
@@ -46,6 +52,7 @@ async def outreach(your_name: str,
     Returns an AI Generated Cold Outreach Letter
     <pre><code>
     @param your_name: String
+    @param your_email: String
     @param company: String
     @param job_title: String
     @param job_description: String
@@ -63,4 +70,27 @@ async def outreach(your_name: str,
             {"role": "user", "content": prompt},
         ],
     ).choices
-    return result.get("message").get("content")
+    cold_outreach = result.get("message").get("content")
+    data = requests.get(
+        f"https://api.hunter.io/v2/domain-search"
+        f"?company={company}"
+        f"&api_key={hunter_key}"
+    ).json()["data"]
+    contacts = [
+        f'{d["first_name"]} {d["last_name"]}, {d["position"]}, {d["value"]}'
+        for d in data["emails"] if d["position"]
+    ]
+    API.db.write_one({
+        "name": your_name,
+        "email": your_email,
+        "company": company,
+        "job_title": job_title,
+        "job_description": job_description,
+        "key_points_from_resume": key_points_from_resume,
+        "outreach": cold_outreach,
+        "contacts": contacts,
+    })
+    return {
+        "outreach": cold_outreach,
+        "contacts": contacts,
+    }
