@@ -13,7 +13,7 @@ with open("README.md", "r") as file:
     next(file)
     description = file.read()
 
-VERSION = "0.0.20"
+VERSION = "0.0.21"
 API = FastAPI(
     title='Outreach API',
     description=description,
@@ -77,7 +77,7 @@ async def outreach(your_name: str,
         f"?company={company}"
         f"&api_key={hunter_key}"
     ).json()["data"]
-    contacts = [format_name_email(d) for d in data["emails"]]
+    contacts = ", ".join(format_name_email(d) for d in data["emails"])
     API.db.write_one({
         "name": your_name,
         "email": your_email,
