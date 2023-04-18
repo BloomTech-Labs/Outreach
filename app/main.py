@@ -12,7 +12,7 @@ with open("README.md", "r") as file:
     next(file)
     description = file.read()
 
-VERSION = "0.0.6"
+VERSION = "0.0.7"
 API = FastAPI(
     title='Outreach API',
     description=description,
@@ -90,6 +90,14 @@ async def outreach(your_name: str,
         "outreach": cold_outreach,
         "contacts": contacts,
     })
+    requests.post(
+        "https://api.mailgun.net/v3/mail.bloomtech.com/messages",
+        auth=("api", os.getenv("MAILGUN_API_KEY")),
+        data={"from": "Outreach Generator <support@bloomtech.com>",
+              "to": f"{your_name} <{your_email}>",
+              "subject": f"Custom Outreach for {company}",
+              "text": f"{cold_outreach}\n\n{contacts}"},
+    )
     return {
         "outreach": cold_outreach,
         "contacts": contacts,
