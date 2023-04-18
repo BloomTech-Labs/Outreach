@@ -1,3 +1,4 @@
+import json
 import os
 
 import requests
@@ -12,7 +13,7 @@ with open("README.md", "r") as file:
     next(file)
     description = file.read()
 
-VERSION = "0.0.11"
+VERSION = "0.0.12"
 API = FastAPI(
     title='Outreach API',
     description=description,
@@ -94,7 +95,7 @@ async def outreach(your_name: str,
         "https://api.mailgun.net/v3/mail.bloomtech.com/messages",
         auth=("api", os.getenv("MAILGUN_API_KEY")),
         headers={
-            "X-Mailgun-Variables": {"outreach_message": cold_outreach, "contact": contacts},
+            "X-Mailgun-Variables": json.dumps({"outreach_message": cold_outreach, "contact": contacts}),
         },
         data={
             "from": "Outreach Generator <support@bloomtech.com>",
