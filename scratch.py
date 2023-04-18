@@ -1,3 +1,4 @@
 import json
 
-print(json.dumps({"a": 1, "b": 2}))
+var = "text"
+print("{{text: {s}}}".format(s="var"))

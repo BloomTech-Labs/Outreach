@@ -13,7 +13,7 @@ with open("README.md", "r") as file:
     next(file)
     description = file.read()
 
-VERSION = "0.0.17d"
+VERSION = "0.0.17e"
 API = FastAPI(
     title='Outreach API',
     description=description,
@@ -99,7 +99,7 @@ async def outreach(your_name: str,
             "to": f"{your_name} <{your_email}>",
             "subject": f"Custom Outreach for {company}",
             "template": "custom_outreach",
-            "h:X-Mailgun-Variables": f'\\{"outreach_message": {cold_outreach}\\}',
+            "h:X-Mailgun-Variables": f'{{"outreach_message": {cold_outreach}}}',
         }
     )
     print(result)
