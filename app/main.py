@@ -78,7 +78,7 @@ async def outreach(your_name: str,
     ).json()["data"]
     contacts = [
         f'{d["first_name"]} {d["last_name"]}, {d["position"]}, {d["value"]}'
-        for d in data["emails"] if d["position"]
+        for d in data["emails"]
     ]
     API.db.write_one({
         "name": your_name,
@@ -93,10 +93,16 @@ async def outreach(your_name: str,
     requests.post(
         "https://api.mailgun.net/v3/mail.bloomtech.com/messages",
         auth=("api", os.getenv("MAILGUN_API_KEY")),
-        data={"from": "Outreach Generator <support@bloomtech.com>",
-              "to": f"{your_name} <{your_email}>",
-              "subject": f"Custom Outreach for {company}",
-              "text": f"{cold_outreach}\n\n{contacts}"},
+        data={
+            "from": "Outreach Generator <support@bloomtech.com>",
+            "to": f"{your_name} <{your_email}>",
+            "subject": f"Custom Outreach for {company}",
+            "template": "custom_outreach",
+            "h:X-Mailgun-Variables": {
+                "outreach_message": cold_outreach,
+                "contact": contacts,
+            },
+        }
     )
     return {
         "outreach": cold_outreach,
