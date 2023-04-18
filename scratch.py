@@ -1,4 +1,4 @@
 import json
 
 var = "text"
-print("{{text: {s}}}".format(s="var"))
+print(f'{{"outreach_message": "{var}"}}')
