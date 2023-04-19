@@ -13,7 +13,7 @@ with open("README.md", "r") as file:
     next(file)
     description = file.read()
 
-VERSION = "0.0.23"
+VERSION = "0.0.24"
 API = FastAPI(
     title='Outreach API',
     description=description,
@@ -60,11 +60,12 @@ async def outreach(your_name: str,
     @param key_points_from_resume: String
     @return: String </code></pre>"""
     context = "You are a master at cold outreach for tech jobs. Respond to the " \
-              "following with only the body of the letter and nothing else."
+              "following with only the body of the letter and nothing else. " \
+              "Do address the letter. Do not use the phrase Dear Hiring Manager..."
     prompt = f"Write a cold outreach letter to {company} from {your_name} " \
              f"for the {job_title} role. The job description " \
              f"is: {job_description}. Key points from {your_name}'s resume " \
-             f"are: {key_points_from_resume}."
+             f"are: {key_points_from_resume}. Dear Hiring Manager,\n\n"
     result, *_ = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -76,7 +77,7 @@ async def outreach(your_name: str,
     data = requests.get(
         f"https://api.hunter.io/v2/domain-search?company={company}&api_key={hunter_key}"
     ).json()["data"]
-    contacts = ", ".join(format_name_email(d) for d in data["emails"])
+    contacts = ", ".join(format_name_email(d) for d in data["emails"][:3])
     API.db.write_one({
         "name": your_name,
         "email": your_email,
