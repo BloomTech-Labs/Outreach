@@ -13,7 +13,7 @@ with open("README.md", "r") as file:
     next(file)
     description = file.read()
 
-VERSION = "0.0.21"
+VERSION = "0.0.22"
 API = FastAPI(
     title='Outreach API',
     description=description,
@@ -59,7 +59,8 @@ async def outreach(your_name: str,
     @param job_description: String
     @param key_points_from_resume: String
     @return: String </code></pre>"""
-    context = "You are a master at cold outreach for tech jobs."
+    context = "You are a master at cold outreach for tech jobs. Respond to the " \
+              "following with only the body of the letter and nothing else."
     prompt = f"Write a cold outreach letter to {company} from {your_name} " \
              f"for the {job_title} role. The job description " \
              f"is: {job_description}. Key points from {your_name}'s resume " \
@@ -71,11 +72,9 @@ async def outreach(your_name: str,
             {"role": "user", "content": prompt},
         ],
     ).choices
-    cold_outreach = result.get("message").get("content")
+    cold_outreach = result.get("message").get("content").replace("\n", "<br>")
     data = requests.get(
-        f"https://api.hunter.io/v2/domain-search"
-        f"?company={company}"
-        f"&api_key={hunter_key}"
+        f"https://api.hunter.io/v2/domain-search?company={company}&api_key={hunter_key}"
     ).json()["data"]
     contacts = ", ".join(format_name_email(d) for d in data["emails"])
     API.db.write_one({
