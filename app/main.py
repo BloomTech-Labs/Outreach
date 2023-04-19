@@ -13,7 +13,7 @@ with open("README.md", "r") as file:
     next(file)
     description = file.read()
 
-VERSION = "0.0.22"
+VERSION = "0.0.23"
 API = FastAPI(
     title='Outreach API',
     description=description,
@@ -72,7 +72,7 @@ async def outreach(your_name: str,
             {"role": "user", "content": prompt},
         ],
     ).choices
-    cold_outreach = result.get("message").get("content").replace("\n", "<br>")
+    cold_outreach = result.get("message").get("content").replace("\n", "<br />")
     data = requests.get(
         f"https://api.hunter.io/v2/domain-search?company={company}&api_key={hunter_key}"
     ).json()["data"]
