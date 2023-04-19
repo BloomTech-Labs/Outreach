@@ -6,6 +6,7 @@ Welcome to the AI Cold Outreach Letter Generator API! This powerful API helps yo
 To use the API, you'll need to provide the following parameters:
 
 - `your_name`: Your full name (as a string)
+- `your_email`: Your email address (as a string)
 - `company`: The name of the company you're reaching out to (as a string)
 - `job_title`: The title of the job you're applying for (as a string)
 - `job_description`: A brief description of the job (as a string)

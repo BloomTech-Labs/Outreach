@@ -7,3 +7,7 @@ def format_name_email(d: dict) -> str:
         return d["value"]
     else:
         return ""
+
+
+def dict_to_str(data) -> str:
+    return f"""{{{', '.join(f'"{k}": "{v}"' for k, v in data.items())}}}"""

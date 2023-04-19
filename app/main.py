@@ -7,13 +7,13 @@ import openai
 from dotenv import load_dotenv
 
 from app.database import Database
-from app.utilities import format_name_email
+from app.utilities import format_name_email, dict_to_str
 
 with open("README.md", "r") as file:
     next(file)
     description = file.read()
 
-VERSION = "0.0.27"
+VERSION = "0.0.28"
 API = FastAPI(
     title='Outreach API',
     description=description,
@@ -88,6 +88,13 @@ async def outreach(your_name: str,
         "outreach": cold_outreach,
         "contacts": contacts,
     })
+    variables = dict_to_str({
+        "outreach_message": cold_outreach,
+        "contact": contacts,
+        "name": your_name,
+        "company": company,
+        "job_title": job_title,
+    })
     requests.post(
         "https://api.mailgun.net/v3/mail.bloomtech.com/messages",
         auth=("api", os.getenv("MAILGUN_API_KEY")),
@@ -96,7 +103,7 @@ async def outreach(your_name: str,
             "to": f"{your_name} <{your_email}>",
             "subject": f"Custom Outreach for {company}",
             "template": "custom_outreach",
-            "h:X-Mailgun-Variables": f'{{"outreach_message": "{cold_outreach}", "contact": "{contacts}", "name": "{your_name}", "company": "{company}", "job_title": "{job_title}"}}',
+            "h:X-Mailgun-Variables": variables,
         }
     )
     return {
