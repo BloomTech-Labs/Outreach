@@ -13,7 +13,7 @@ with open("README.md", "r") as file:
     next(file)
     description = file.read()
 
-VERSION = "0.0.24"
+VERSION = "0.0.25"
 API = FastAPI(
     title='Outreach API',
     description=description,
@@ -61,7 +61,7 @@ async def outreach(your_name: str,
     @return: String </code></pre>"""
     context = "You are a master at cold outreach for tech jobs. Respond to the " \
               "following with only the body of the letter and nothing else. " \
-              "Do address the letter. Do not use the phrase Dear Hiring Manager..."
+              "Do not address the letter. Do not use the phrase Dear Hiring Manager..."
     prompt = f"Write a cold outreach letter to {company} from {your_name} " \
              f"for the {job_title} role. The job description " \
              f"is: {job_description}. Key points from {your_name}'s resume " \
