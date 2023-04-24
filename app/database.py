@@ -55,3 +55,8 @@ class Database:
 
     def drop_index(self):
         self.collection.drop_indexes()
+
+
+if __name__ == '__main__':
+    db = Database("Outreach")
+    db.reset_collection()
