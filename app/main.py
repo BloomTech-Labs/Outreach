@@ -59,18 +59,18 @@ async def outreach(your_name: str,
     @param job_description: String
     @param key_points_from_resume: String
     @return: String </code></pre>"""
-    context = "You are a master at cold outreach for tech jobs. Respond to the " \
-              "following with only the body of the letter and nothing else. " \
-              "Do not address the letter. Do not use the phrase Dear Hiring Manager..."
+    context = "You are a master at cold outreach for tech jobs."
     prompt = f"Write a cold outreach letter to {company} from {your_name} " \
              f"for the {job_title} role. The job description " \
              f"is: {job_description}. Key points from {your_name}'s resume " \
-             f"are: {key_points_from_resume}. Dear Hiring Manager,\n\n"
+             f"are: {key_points_from_resume}."
+    start = "Dear Hiring Manager,\n\n"
     result, *_ = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": context},
             {"role": "user", "content": prompt},
+            {"role": "assistant", "content": start},
         ],
     ).choices
     cold_outreach = result.get("message").get("content").replace("\n", "<br>")
