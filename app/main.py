@@ -1,19 +1,19 @@
 import os
 
-import requests
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import openai
 from dotenv import load_dotenv
+from fastapi.background import BackgroundTasks
 
 from app.database import Database
-from app.utilities import format_name_email, dict_to_str
+from app.utilities import custom_outreach
 
 with open("README.md", "r") as file:
     next(file)
     description = file.read()
 
-VERSION = "0.0.30"
+VERSION = "0.0.31"
 API = FastAPI(
     title='Outreach API',
     description=description,
@@ -43,70 +43,29 @@ async def version():
 
 
 @API.get("/outreach", tags=["Outreach"])
-async def outreach(your_name: str,
+async def outreach(queue: BackgroundTasks,
+                   your_name: str,
                    your_email: str,
                    company: str,
                    job_title: str,
                    job_description: str,
                    key_points_from_resume: str):
     """<h3>Outreach</h3>
-    Returns an AI Generated Cold Outreach Letter
+    Sends an AI Generated Cold Outreach Email
     <pre><code>
-    @param your_name: String
-    @param your_email: String
-    @param company: String
-    @param job_title: String
-    @param job_description: String
-    @param key_points_from_resume: String
-    @return: String </code></pre>"""
-    context = "You are a master at cold outreach for tech jobs."
-    prompt = f"Write a cold outreach letter to {company} from {your_name} " \
-             f"for the {job_title} role. The job description " \
-             f"is: {job_description}. Key points from {your_name}'s resume " \
-             f"are: {key_points_from_resume}."
-    start = "Dear Hiring Manager,\n\n"
-    result, *_ = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": context},
-            {"role": "user", "content": prompt},
-            {"role": "assistant", "content": start},
-        ],
-    ).choices
-    cold_outreach = result.get("message").get("content").replace("\n", "<br>")
-    data = requests.get(
-        f"https://api.hunter.io/v2/domain-search?company={company}&api_key={hunter_key}"
-    ).json()["data"]
-    contacts = "<br>".join(format_name_email(d) for d in data["emails"][:3])
-    API.db.write_one({
-        "name": your_name,
-        "email": your_email,
-        "company": company,
-        "job_title": job_title,
-        "job_description": job_description,
-        "key_points_from_resume": key_points_from_resume,
-        "outreach": cold_outreach,
-        "contacts": contacts,
-    })
-    variables = dict_to_str({
-        "outreach_message": cold_outreach,
-        "contact": contacts,
-        "name": your_name,
-        "company": company,
-        "job_title": job_title,
-    })
-    requests.post(
-        "https://api.mailgun.net/v3/mail.bloomtech.com/messages",
-        auth=("api", os.getenv("MAILGUN_API_KEY")),
-        data={
-            "from": "Outreach Generator <support@bloomtech.com>",
-            "to": f"{your_name} <{your_email}>",
-            "subject": f"Custom Outreach for {company}",
-            "template": "custom_outreach",
-            "h:X-Mailgun-Variables": variables,
-        }
-    )
-    return {
-        "outreach": cold_outreach,
-        "contacts": contacts,
-    }
+    @param queue: Automatic FastAPI BackgroundTasks.
+    @param your_name: String.
+    @param your_email: String.
+    @param company: String.
+    @param job_title: String.
+    @param job_description: String.
+    @param key_points_from_resume: String.
+    @return: String.</code></pre>"""
+    queue.add_task(custom_outreach,
+                   your_name,
+                   your_email,
+                   company,
+                   job_title,
+                   job_description,
+                   key_points_from_resume)
+    return {"status": 200, "message": "job started"}
