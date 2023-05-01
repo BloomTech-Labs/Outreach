@@ -1,19 +1,14 @@
-import os
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import openai
-from dotenv import load_dotenv
 from fastapi.background import BackgroundTasks
 
-from app.database import Database
 from app.utilities import custom_outreach
 
 with open("README.md", "r") as file:
     next(file)
     description = file.read()
 
-VERSION = "0.0.31"
+VERSION = "0.0.32"
 API = FastAPI(
     title='Outreach API',
     description=description,
@@ -27,10 +22,6 @@ API.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
-load_dotenv()
-openai.api_key = os.getenv("OPENAI_KEY")
-hunter_key = os.getenv("HUNTER_KEY")
-API.db = Database("Outreach")
 
 
 @API.get("/version", tags=["General"])
