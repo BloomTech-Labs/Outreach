@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 
 import openai
@@ -53,6 +54,7 @@ def custom_outreach(your_name: str,
         f"https://api.hunter.io/v2/domain-search?company={company}&api_key={hunter_key}"
     ).json()["data"]
     contacts = "<br>".join(format_name_email(d) for d in data["emails"][:3])
+    timestamp = datetime.today().isoformat()
     db.write_one({
         "name": your_name,
         "email": your_email,
@@ -62,6 +64,7 @@ def custom_outreach(your_name: str,
         "key_points_from_resume": key_points_from_resume,
         "outreach": cold_outreach,
         "contacts": contacts,
+        "timestamp": timestamp,
     })
     variables = dict_to_str({
         "outreach_message": cold_outreach,
