@@ -8,7 +8,7 @@ with open("README.md", "r") as file:
     next(file)
     description = file.read()
 
-VERSION = "0.0.33"
+VERSION = "0.0.34"
 API = FastAPI(
     title='Outreach API',
     description=description,

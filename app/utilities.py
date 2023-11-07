@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+from time import sleep
 
 import openai
 import requests
@@ -27,6 +28,25 @@ def format_name_email(d: dict) -> str:
 
 def dict_to_str(data) -> str:
     return f"""{{{', '.join(f'"{k}": "{v}"' for k, v in data.items())}}}"""
+
+
+def try_retry_openai(context, prompt, start):
+
+    def worker():
+        return openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": context},
+                {"role": "user", "content": prompt},
+                {"role": "assistant", "content": start},
+            ],
+        )
+
+    result = worker()
+    while not result:
+        sleep(5)
+        result = worker()
+    return result
 
 
 def custom_outreach(your_name: str,
