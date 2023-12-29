@@ -59,7 +59,9 @@ def custom_outreach(your_name: str,
     prompt = f"Write a cold outreach letter to {company} from {your_name} " \
              f"for the {job_title} role. The job description " \
              f"is: {job_description}. Key points from {your_name}'s resume " \
-             f"are: {key_points_from_resume}."
+             f"are: {key_points_from_resume}. Remember the email should be short!" \
+             f"You want to be clear and concise. Showcase my skills quickly and effectively." \
+             f"End each email with a direct ask for a referral."
     start = "Dear Hiring Manager,\n\n"
     result, *_ = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
